@@ -11,3 +11,21 @@ server.listen(4000);
 
 app.use(bodyParser());
 app.use(express.static('./client'));
+
+io.on('connection', function(socket) {
+  socket.join('lobby');
+  socket.emit('S_addToLobby', { id: socket.id });
+  io.emit('S_updatePlayers', {
+    ids: _.map(io.sockets.adapter.rooms.lobby, function(value, id) {
+      return id;
+    })
+  });
+
+  socket.on('disconnect', function() {
+    io.emit('S_updatePlayers', {
+      ids: _.map(io.sockets.adapter.rooms.lobby, function(value, id) {
+        return id;
+      })
+    });
+  });
+});
