@@ -2,11 +2,14 @@ var React = require('react');
 var Reflux = require('reflux');
 var _ = require('lodash');
 
+var Socket = require('./../socket');
+
 var LobbyStore = require('./../stores/LobbyStore');
 
 var Lobby = React.createClass({
   mixins: [Reflux.connect(LobbyStore)],
   startGame: function(player) {
+    Socket.startGame(player);
   },
 
   getInitialState: function() {
