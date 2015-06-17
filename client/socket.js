@@ -15,10 +15,16 @@ socket.on('S_updatePlayers', function(data) {
 socket.on('S_startGame', function(data) {
   AppActions.startGame(data.player);
 });
+socket.on('S_sendPositions', function(positions) {
+  console.log(positions);
+});
 
 var socketApi = {
   startGame: function(player) {
     socket.emit('C_startGame', { player: player });
+  },
+  sendPosition: function(position) {
+    socket.emit('C_sendPosition', { position: position });
   }
 };
 
