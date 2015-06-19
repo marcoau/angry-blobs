@@ -4,7 +4,7 @@ var Reflux = require('reflux');
 var Lobby = require('./components/Lobby.react');
 var GameBoard = require('./components/GameBoard.react');
 
-var Socket = require('./socket');
+var Socket = require('./socket').io;
 
 var AppStore = require('./stores/AppStore');
 

@@ -28,4 +28,7 @@ var socketApi = {
   }
 };
 
-module.exports = socketApi;
+module.exports = {
+  api: socketApi,
+  io: socket
+};

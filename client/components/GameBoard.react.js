@@ -1,7 +1,8 @@
 var React = require('react');
 var d3 = require('d3');
 
-var Socket = require('./../socket');
+var SocketApi = require('./../socket').api;
+var Socket = require('./../socket').io;
 
 var GameBoard = React.createClass({
   componentDidMount: function() {
@@ -29,6 +30,6 @@ function initGameSvg() {
     });
 
   setInterval(function() {
-    Socket.sendPosition(mousePosition);
+    SocketApi.sendPosition(mousePosition);
   }, 100);
 }
