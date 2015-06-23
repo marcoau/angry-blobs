@@ -1,5 +1,6 @@
 var AppActions = require('./actions/AppActions');
 var LobbyActions = require('./actions/LobbyActions');
+var GameBoardActions = require('./actions/GameBoardActions');
 
 var socket = io();
 
@@ -15,8 +16,9 @@ socket.on('S_updatePlayers', function(data) {
 socket.on('S_startGame', function(data) {
   AppActions.startGame(data.player);
 });
-socket.on('S_sendPositions', function(positions) {
-  console.log(positions);
+
+socket.on('S_sendPlayerPositions', function(data) {
+  GameBoardActions.updatePlayerPositions(data);
 });
 
 var socketApi = {
