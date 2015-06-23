@@ -13,17 +13,44 @@ var Game = {
     s1.emit('S_startGame', { player: s2.id });
     s2.emit('S_startGame', { player: s1.id });
 
+    var SPEED_RATIO = 200;
+    var MIN_SPEED = 5;
+
     // temp
-    var s1Blob = { position: [300,200] };
-    var s2Blob = { position: [300,200] };
+    var s1Blob = { position: [300,200], v: [0,0] };
+    var s2Blob = { position: [300,200], v: [0,0] };
 
     s1.on('C_sendPosition', function(data) {
-      s1Blob.position = data.position;
+      var vx = data.position[0] - s1Blob.position[0];
+      s1Blob.v[0] = vx >= 0 ?
+        Math.min(vx, Math.max(MIN_SPEED, vx / SPEED_RATIO)) :
+        Math.max(vx, Math.min(-MIN_SPEED, vx / SPEED_RATIO));
+
+      var vy = data.position[1] - s1Blob.position[1];
+      s1Blob.v[1] = vy >= 0 ?
+        Math.min(vy, Math.max(MIN_SPEED, vy / SPEED_RATIO)) :
+        Math.max(vy, Math.min(-MIN_SPEED, vy / SPEED_RATIO));
     });
     s2.on('C_sendPosition', function(data) {
-      s2Blob.position = data.position;
+      var vx = data.position[0] - s2Blob.position[0];
+      s2Blob.v[0] = vx >= 0 ?
+        Math.min(vx, Math.max(MIN_SPEED, vx / SPEED_RATIO)) :
+        Math.max(vx, Math.min(-MIN_SPEED, vx / SPEED_RATIO));
+
+      var vy = data.position[1] - s2Blob.position[1];
+      s2Blob.v[1] = vy >= 0 ?
+        Math.min(vy, Math.max(MIN_SPEED, vy / SPEED_RATIO)) :
+        Math.max(vy, Math.min(-MIN_SPEED, vy / SPEED_RATIO));
     });
-    var timer = setInterval(function() {
+
+    var renderBlobs = function() {
+      // CALCULATE BLOB POSITIONS
+      s1Blob.position[0] = s1Blob.position[0] + s1Blob.v[0];
+      s1Blob.position[1] = s1Blob.position[1] + s1Blob.v[1];
+      s2Blob.position[0] = s2Blob.position[0] + s2Blob.v[0];
+      s2Blob.position[1] = s2Blob.position[1] + s2Blob.v[1];
+
+      // SEND BLOB POSITIONS
       s1.emit('S_sendPlayerPositions', {
         me: s1Blob.position,
         opponent: s2Blob.position
@@ -32,7 +59,8 @@ var Game = {
         me: s2Blob.position,
         opponent: s1Blob.position
       });
-    }, 15);
+    };
+    var timer = setInterval(renderBlobs, 15);
 
     var killGame = function() {
       clearInterval(timer);
