@@ -16,10 +16,18 @@ var GameBoard = React.createClass({
   getInitialState: function() {
     return {
       mePosition: [400,200],
-      opponentPosition: [300,200]
+      opponentPosition: [300,200],
+      myEnemyPositions: [],
+      opponentEnemyPositions: []
     };
   },
   render: function() {
+    var myEnemies = this.state.myEnemyPositions.map(p => (
+      <circle r='3' cx={p[0]} cy={p[1]} />
+    ));
+    var opponentEnemies = this.state.opponentEnemyPositions.map(p => (
+      <circle r='2' cx={p[0]} cy={p[1]} />
+    ));
     return (
       <div>
         <h2>Game</h2>
@@ -31,6 +39,8 @@ var GameBoard = React.createClass({
           <circle r='5'
             cx={this.state.opponentPosition[0]}
             cy={this.state.opponentPosition[1]} />
+          {myEnemies}
+          {opponentEnemies}
         </svg>
       </div>
     );

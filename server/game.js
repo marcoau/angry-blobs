@@ -19,10 +19,70 @@ var Game = {
     var SPEED_RATIO = 200;
     var MIN_SPEED = 5;
 
-    // temp
+    // BLOBS!!!
     var s1Blob = { position: [300,200], v: [0,0] };
     var s2Blob = { position: [300,200], v: [0,0] };
+    var s1Enemies = [];
+    var s2Enemies = [];
 
+    var renderBlobs = function() {
+      // CALCULATE BLOB POSITIONS
+      s1Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s1Blob.position[0] + s1Blob.v[0]));
+      s1Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s1Blob.position[1] + s1Blob.v[1]));
+      s2Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s2Blob.position[0] + s2Blob.v[0]));
+      s2Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s2Blob.position[1] + s2Blob.v[1]));
+
+      // SEND BLOB POSITIONS
+      s1.emit('S_sendPlayerPositions', {
+        me: s1Blob.position,
+        opponent: s2Blob.position
+      });
+      s2.emit('S_sendPlayerPositions', {
+        me: s2Blob.position,
+        opponent: s1Blob.position
+      });
+    };
+    var timer = setInterval(renderBlobs, 15);
+
+    var createS1EnemyBlob = function() {
+      var blob = {
+        position: [Math.random() * BOARD_WIDTH, Math.random() * BOARD_HEIGHT]
+      };
+      s1Enemies.push(blob);
+    };
+    var createS2EnemyBlob = function() {
+      var blob = {
+        position: [Math.random() * BOARD_WIDTH, Math.random() * BOARD_HEIGHT]
+      };
+      s2Enemies.push(blob);
+    };
+    var createEnemyBlobs = function() {
+      if(Math.random() * 10 > 9) {
+        createS1EnemyBlob();
+        s1.emit('S_sendEnemyPositions', {
+          me: s1Enemies,
+          opponent: s2Enemies
+        });
+        s2.emit('S_sendEnemyPositions', {
+          me: s2Enemies,
+          opponent: s1Enemies
+        });
+      }
+      if(Math.random() * 10 > 9) {
+        createS2EnemyBlob();
+        s1.emit('S_sendEnemyPositions', {
+          me: s1Enemies,
+          opponent: s2Enemies
+        });
+        s2.emit('S_sendEnemyPositions', {
+          me: s2Enemies,
+          opponent: s1Enemies
+        });
+      }
+    };
+    setInterval(createEnemyBlobs, 200);
+
+    // USER CONTROL INPUT
     s1.on('C_sendPosition', function(data) {
       var vx = data.position[0] - s1Blob.position[0];
       s1Blob.v[0] = vx >= 0 ?
@@ -45,25 +105,6 @@ var Game = {
         Math.min(vy, Math.max(MIN_SPEED, vy / SPEED_RATIO)) :
         Math.max(vy, Math.min(-MIN_SPEED, vy / SPEED_RATIO));
     });
-
-    var renderBlobs = function() {
-      // CALCULATE BLOB POSITIONS
-      s1Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s1Blob.position[0] + s1Blob.v[0]));
-      s1Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s1Blob.position[1] + s1Blob.v[1]));
-      s2Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s2Blob.position[0] + s2Blob.v[0]));
-      s2Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s2Blob.position[1] + s2Blob.v[1]));
-
-      // SEND BLOB POSITIONS
-      s1.emit('S_sendPlayerPositions', {
-        me: s1Blob.position,
-        opponent: s2Blob.position
-      });
-      s2.emit('S_sendPlayerPositions', {
-        me: s2Blob.position,
-        opponent: s1Blob.position
-      });
-    };
-    var timer = setInterval(renderBlobs, 15);
 
     var killGame = function() {
       clearInterval(timer);

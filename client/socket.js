@@ -20,6 +20,9 @@ socket.on('S_startGame', function(data) {
 socket.on('S_sendPlayerPositions', function(data) {
   GameBoardActions.updatePlayerPositions(data);
 });
+socket.on('S_sendEnemyPositions', function(data) {
+  GameBoardActions.updateEnemyPositions(data);
+})
 
 var socketApi = {
   startGame: function(player) {
