@@ -23,20 +23,18 @@ var GameBoard = React.createClass({
   },
   render: function() {
     var myEnemies = this.state.myEnemyPositions.map(p => (
-      <circle r='3' cx={p[0]} cy={p[1]} />
+      <circle r='3' className='my-enemies' cx={p[0]} cy={p[1]} />
     ));
     var opponentEnemies = this.state.opponentEnemyPositions.map(p => (
-      <circle r='2' cx={p[0]} cy={p[1]} />
+      <circle r='3' className='opponent-enemies' cx={p[0]} cy={p[1]} />
     ));
     return (
       <div>
-        <h2>Game</h2>
-        <p>{this.state.mePosition}</p>
         <svg id='game-board'>
-          <circle r='10'
+          <circle r='10' className='me'
             cx={this.state.mePosition[0]}
             cy={this.state.mePosition[1]} />
-          <circle r='5'
+          <circle r='10' className='opponent'
             cx={this.state.opponentPosition[0]}
             cy={this.state.opponentPosition[1]} />
           {myEnemies}
