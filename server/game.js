@@ -13,6 +13,9 @@ var Game = {
     s1.emit('S_startGame', { player: s2.id });
     s2.emit('S_startGame', { player: s1.id });
 
+    // parameters
+    var BOARD_WIDTH = 600;
+    var BOARD_HEIGHT = 400;
     var SPEED_RATIO = 200;
     var MIN_SPEED = 5;
 
@@ -45,10 +48,10 @@ var Game = {
 
     var renderBlobs = function() {
       // CALCULATE BLOB POSITIONS
-      s1Blob.position[0] = s1Blob.position[0] + s1Blob.v[0];
-      s1Blob.position[1] = s1Blob.position[1] + s1Blob.v[1];
-      s2Blob.position[0] = s2Blob.position[0] + s2Blob.v[0];
-      s2Blob.position[1] = s2Blob.position[1] + s2Blob.v[1];
+      s1Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s1Blob.position[0] + s1Blob.v[0]));
+      s1Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s1Blob.position[1] + s1Blob.v[1]));
+      s2Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s2Blob.position[0] + s2Blob.v[0]));
+      s2Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s2Blob.position[1] + s2Blob.v[1]));
 
       // SEND BLOB POSITIONS
       s1.emit('S_sendPlayerPositions', {
