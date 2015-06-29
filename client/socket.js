@@ -24,6 +24,13 @@ socket.on('S_sendEnemyPositions', function(data) {
   GameBoardActions.updateEnemyPositions(data);
 })
 
+socket.on('S_sendWinMessage', function() {
+  GameBoardActions.winGame();
+});
+socket.on('S_sendLoseMessage', function() {
+  GameBoardActions.loseGame();
+});
+
 var socketApi = {
   startGame: function(player) {
     socket.emit('C_startGame', { player: player });

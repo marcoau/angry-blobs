@@ -21,6 +21,12 @@ var GameBoardStore = Reflux.createStore({
       myEnemyPositions: _myEnemyPositions,
       opponentEnemyPositions: _opponentEnemyPositions
     });
+  },
+  onWinGame: function() {
+    console.log('CONGRATZ YOU WON!');
+  },
+  onLoseGame: function() {
+    console.log('YOU LOST BRO.');
   }
 });
 

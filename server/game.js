@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Lobby = require('./lobby');
 
 var Game = {
@@ -31,6 +32,23 @@ var Game = {
       s1Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s1Blob.position[1] + s1Blob.v[1]));
       s2Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s2Blob.position[0] + s2Blob.v[0]));
       s2Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s2Blob.position[1] + s2Blob.v[1]));
+
+      // COLLISION DETECTION
+      if(s1HasCollided() && s2HasCollided()) {
+        s1.emit('S_sendLoseMessage');
+        s2.emit('S_sendLoseMessage');
+        clearInterval(timer);
+      }
+      if(s1HasCollided()) {
+        s1.emit('S_sendLoseMessage');
+        s2.emit('S_sendWinMessage');
+        clearInterval(timer);
+      }
+      if(s2HasCollided()) {
+        s2.emit('S_sendLoseMessage');
+        s1.emit('S_sendWinMessage');
+        clearInterval(timer);
+      }
 
       // SEND BLOB POSITIONS
       s1.emit('S_sendPlayerPositions', {
@@ -81,6 +99,26 @@ var Game = {
       }
     };
     setInterval(createEnemyBlobs, 200);
+
+    // ENEMY COLLISION DETECTION
+    var s1HasCollided = function() {
+      var collidedS1Enemy = _.find(s1Enemies, function(e) {
+        var distance = Math.pow(
+          Math.pow(s1Blob.position[0] - e.position[0], 2) + Math.pow(s1Blob.position[1] - e.position[1], 2),
+        0.5);
+        return distance < 10;
+      });
+      return !!collidedS1Enemy;
+    }
+    var s2HasCollided = function() {
+      var collidedS2Enemy = _.find(s2Enemies, function(e) {
+        var distance = Math.pow(
+          Math.pow(s2Blob.position[0] - e.position[0], 2) + Math.pow(s2Blob.position[1] - e.position[1], 2),
+        0.5);
+        return distance < 10;
+      });
+      return !!collidedS2Enemy;
+    };
 
     // USER CONTROL INPUT
     s1.on('C_sendPosition', function(data) {
