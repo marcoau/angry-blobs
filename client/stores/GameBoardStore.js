@@ -6,6 +6,8 @@ var _mePosition;
 var _opponentPosition;
 var _myEnemyPositions;
 var _opponentEnemyPositions;
+var _myBlow;
+var _opponentBlow;
 
 var GameBoardStore = Reflux.createStore({
   listenables: GameBoardActions,
@@ -20,6 +22,14 @@ var GameBoardStore = Reflux.createStore({
     this.trigger({
       myEnemyPositions: _myEnemyPositions,
       opponentEnemyPositions: _opponentEnemyPositions
+    });
+  },
+  onUpdateBlows: function(data) {
+    _myBlow = data.me;
+    _opponentBlow = data.opponent;
+    this.trigger({
+      myBlow: _myBlow,
+      opponentBlow: _opponentBlow
     });
   },
   onWinGame: function() {

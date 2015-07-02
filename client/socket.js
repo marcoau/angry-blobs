@@ -22,7 +22,11 @@ socket.on('S_sendPlayerPositions', function(data) {
 });
 socket.on('S_sendEnemyPositions', function(data) {
   GameBoardActions.updateEnemyPositions(data);
-})
+});
+
+socket.on('S_sendBlowData', function(data) {
+  GameBoardActions.updateBlows(data);
+});
 
 socket.on('S_sendWinMessage', function() {
   GameBoardActions.winGame();
@@ -37,6 +41,9 @@ var socketApi = {
   },
   sendPosition: function(position) {
     socket.emit('C_sendPosition', { position: position });
+  },
+  blowEnemies: function(position) {
+    socket.emit('C_sendBlowPosition', { position: position });
   }
 };
 

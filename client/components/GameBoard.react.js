@@ -18,7 +18,9 @@ var GameBoard = React.createClass({
       mePosition: [400,200],
       opponentPosition: [300,200],
       myEnemyPositions: [],
-      opponentEnemyPositions: []
+      opponentEnemyPositions: [],
+      myBlow: null,
+      opponentBlow: null
     };
   },
   render: function() {
@@ -28,8 +30,23 @@ var GameBoard = React.createClass({
     var opponentEnemies = this.state.opponentEnemyPositions.map(p => (
       <circle r='3' className='opponent-enemies' cx={p[0]} cy={p[1]} />
     ));
+    var myBlow = this.state.myBlow ? (
+      <circle r={this.state.myBlow.r}
+        cx={this.state.myBlow.position[0]}
+        cy={this.state.myBlow.position[1]} />
+    ) : (
+      <circle />
+    );
+    var opponentBlow = this.state.opponentBlow ? (
+      <circle r={this.state.opponentBlow.r}
+        cx={this.state.opponentBlow.position[0]}
+        cy={this.state.opponentBlow.position[1]} />
+    ) : (
+      <circle />
+    );
+
     return (
-      <div>
+      <div onKeyDown=''>
         <svg id='game-board'>
           <circle r='10' className='me'
             cx={this.state.mePosition[0]}
@@ -39,6 +56,8 @@ var GameBoard = React.createClass({
             cy={this.state.opponentPosition[1]} />
           {myEnemies}
           {opponentEnemies}
+          {myBlow}
+          {opponentBlow}
         </svg>
       </div>
     );
@@ -52,6 +71,14 @@ function initGameSvg() {
   // start at center
   var mousePosition = [300,200];
   var board = d3.select('#game-board');
+
+  var body = document.getElementsByTagName('body')[0];
+  body.addEventListener('keydown', function(event) {
+    // spacebar to blow
+    if(event.keyCode === 32) {
+      SocketApi.blowEnemies(mousePosition);
+    }
+  });
 
   board.on('mousemove', function(event) {
     mousePosition = d3.mouse(this);

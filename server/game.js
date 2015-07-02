@@ -20,11 +20,17 @@ var Game = {
     var SPEED_RATIO = 200;
     var MIN_SPEED = 5;
 
+    var MIN_BLOW_RADIUS = 3;
+    var MAX_BLOW_RADIUS = 50;
+    var BLOW_EXPAND_RATE = 1;
+
     // BLOBS!!!
     var s1Blob = { position: [300,200], v: [0,0] };
     var s2Blob = { position: [300,200], v: [0,0] };
     var s1Enemies = [];
     var s2Enemies = [];
+    var s1Blow;
+    var s2Blow;
 
     var renderBlobs = function() {
       // CALCULATE BLOB POSITIONS
@@ -50,6 +56,20 @@ var Game = {
         clearInterval(timer);
       }
 
+      // RENDER BLOWS
+      if(s1Blow) {
+        s1Blow.r += BLOW_EXPAND_RATE;
+        if(s1Blow.r > MAX_BLOW_RADIUS) {
+          s1Blow = null;
+        }
+      }
+      if(s2Blow) {
+        s2Blow.r += BLOW_EXPAND_RATE;
+        if(s2Blow.r > MAX_BLOW_RADIUS) {
+          s2Blow = null;
+        }
+      }
+
       // SEND BLOB POSITIONS
       s1.emit('S_sendPlayerPositions', {
         me: s1Blob.position,
@@ -58,6 +78,14 @@ var Game = {
       s2.emit('S_sendPlayerPositions', {
         me: s2Blob.position,
         opponent: s1Blob.position
+      });
+      s1.emit('S_sendBlowData', {
+        me: s1Blow,
+        opponent: s2Blow
+      });
+      s2.emit('S_sendBlowData', {
+        me: s2Blow,
+        opponent: s1Blow
       });
     };
     var timer = setInterval(renderBlobs, 15);
@@ -120,6 +148,14 @@ var Game = {
       return !!collidedS2Enemy;
     };
 
+    // BLOW
+    var createS1Blow = function(position) {
+      s1Blow = { position: position, r: MIN_BLOW_RADIUS };
+    };
+    var createS2Blow = function(position) {
+      s2Blow = { position: position, r: MIN_BLOW_RADIUS };
+    };
+
     // USER CONTROL INPUT
     s1.on('C_sendPosition', function(data) {
       var vx = data.position[0] - s1Blob.position[0];
@@ -142,6 +178,14 @@ var Game = {
       s2Blob.v[1] = vy >= 0 ?
         Math.min(vy, Math.max(MIN_SPEED, vy / SPEED_RATIO)) :
         Math.max(vy, Math.min(-MIN_SPEED, vy / SPEED_RATIO));
+    });
+
+    // USER BLOWS ENEMIES
+    s1.on('C_sendBlowPosition', function(data) {
+      createS1Blow(data.position);
+    });
+    s2.on('C_sendBlowPosition', function(data) {
+      createS2Blow(data.position);
     });
 
     var killGame = function() {
