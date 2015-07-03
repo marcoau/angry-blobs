@@ -20,6 +20,7 @@ var Game = {
     var SPEED_RATIO = 200;
     var MIN_SPEED = 5;
 
+    var PLAYER_RADIUS = 10;
     var ENEMY_RADIUS = 3;
     var MIN_BLOW_RADIUS = 3;
     var MAX_BLOW_RADIUS = 50;
@@ -147,7 +148,7 @@ var Game = {
         var distance = Math.pow(
           Math.pow(s1Blob.position[0] - e.position[0], 2) + Math.pow(s1Blob.position[1] - e.position[1], 2),
         0.5);
-        return distance < 10;
+        return distance < PLAYER_RADIUS + ENEMY_RADIUS;
       });
       return !!collidedS1Enemy;
     }
@@ -156,7 +157,7 @@ var Game = {
         var distance = Math.pow(
           Math.pow(s2Blob.position[0] - e.position[0], 2) + Math.pow(s2Blob.position[1] - e.position[1], 2),
         0.5);
-        return distance < 10;
+        return distance < PLAYER_RADIUS + ENEMY_RADIUS;
       });
       return !!collidedS2Enemy;
     };
