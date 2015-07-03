@@ -20,6 +20,7 @@ var Game = {
     var SPEED_RATIO = 200;
     var MIN_SPEED = 5;
 
+    var ENEMY_RADIUS = 3;
     var MIN_BLOW_RADIUS = 3;
     var MAX_BLOW_RADIUS = 50;
     var BLOW_EXPAND_RATE = 1;
@@ -70,6 +71,24 @@ var Game = {
         }
       }
 
+      // BLOW COLLISION DETECTION
+      if(s1Blow) {
+        s1Enemies = _.filter(s1Enemies, function(e, i) {
+          var distance = Math.pow(
+            Math.pow(s1Blow.position[0] - e.position[0], 2) + Math.pow(s1Blow.position[1] - e.position[1], 2),
+          0.5);
+          return distance >= s1Blow.r + ENEMY_RADIUS;
+        });
+      }
+      if(s2Blow) {
+        s2Enemies = _.filter(s2Enemies, function(e, i) {
+          var distance = Math.pow(
+            Math.pow(s2Blow.position[0] - e.position[0], 2) + Math.pow(s2Blow.position[1] - e.position[1], 2),
+          0.5);
+          return distance >= s2Blow.r + ENEMY_RADIUS;
+        });
+      }
+
       // SEND BLOB POSITIONS
       s1.emit('S_sendPlayerPositions', {
         me: s1Blob.position,
@@ -79,6 +98,16 @@ var Game = {
         me: s2Blob.position,
         opponent: s1Blob.position
       });
+      // SEND ENEMY POSITIONS
+      s1.emit('S_sendEnemyPositions', {
+        me: s1Enemies,
+        opponent: s2Enemies
+      });
+      s2.emit('S_sendEnemyPositions', {
+        me: s2Enemies,
+        opponent: s1Enemies
+      });
+      // SEND BLOW DATA
       s1.emit('S_sendBlowData', {
         me: s1Blow,
         opponent: s2Blow
@@ -105,25 +134,9 @@ var Game = {
     var createEnemyBlobs = function() {
       if(Math.random() * 10 > 9) {
         createS1EnemyBlob();
-        s1.emit('S_sendEnemyPositions', {
-          me: s1Enemies,
-          opponent: s2Enemies
-        });
-        s2.emit('S_sendEnemyPositions', {
-          me: s2Enemies,
-          opponent: s1Enemies
-        });
       }
       if(Math.random() * 10 > 9) {
         createS2EnemyBlob();
-        s1.emit('S_sendEnemyPositions', {
-          me: s1Enemies,
-          opponent: s2Enemies
-        });
-        s2.emit('S_sendEnemyPositions', {
-          me: s2Enemies,
-          opponent: s1Enemies
-        });
       }
     };
     setInterval(createEnemyBlobs, 200);
