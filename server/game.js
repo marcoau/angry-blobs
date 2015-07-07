@@ -22,6 +22,7 @@ var Game = {
 
     var PLAYER_RADIUS = 10;
     var ENEMY_RADIUS = 3;
+    var ENEMY_ACCER_RATE = 0.3;
     var MIN_BLOW_RADIUS = 3;
     var MAX_BLOW_RADIUS = 50;
     var BLOW_EXPAND_RATE = 1;
@@ -41,7 +42,29 @@ var Game = {
       s2Blob.position[0] = Math.max(0, Math.min(BOARD_WIDTH, s2Blob.position[0] + s2Blob.v[0]));
       s2Blob.position[1] = Math.max(0, Math.min(BOARD_HEIGHT, s2Blob.position[1] + s2Blob.v[1]));
 
-      // COLLISION DETECTION
+      // UPDATE ENEMY POSITION
+      _.each(s1Enemies, function(e) {
+        e.v += ENEMY_ACCER_RATE / SPEED_RATIO;
+        var distanceX = s1Blob.position[0] - e.position[0];
+        var distanceY = s1Blob.position[1] - e.position[1];
+        var multiplierX = distanceX > 0 ? 1 : -1;
+        var multiplierY = distanceY > 0 ? 1 : -1;
+        var dir = Math.atan(distanceY / distanceX);
+        e.position[0] += Math.abs(e.v * Math.cos(dir)) * multiplierX;
+        e.position[1] += Math.abs(e.v * Math.sin(dir)) * multiplierY;
+      });
+      _.each(s2Enemies, function(e) {
+        e.v += ENEMY_ACCER_RATE / SPEED_RATIO;
+        var distanceX = s2Blob.position[0] - e.position[0];
+        var distanceY = s2Blob.position[1] - e.position[1];
+        var multiplierX = distanceX > 0 ? 1 : -1;
+        var multiplierY = distanceY > 0 ? 1 : -1;
+        var dir = Math.atan(distanceY / distanceX);
+        e.position[0] += Math.abs(e.v * Math.cos(dir)) * multiplierX;
+        e.position[1] += Math.abs(e.v * Math.sin(dir)) * multiplierY;
+      });
+
+      // ENEMY COLLISION DETECTION
       if(s1HasCollided() && s2HasCollided()) {
         s1.emit('S_sendLoseMessage');
         s2.emit('S_sendLoseMessage');
@@ -122,13 +145,15 @@ var Game = {
 
     var createS1EnemyBlob = function() {
       var blob = {
-        position: [Math.random() * BOARD_WIDTH, Math.random() * BOARD_HEIGHT]
+        position: [Math.random() * BOARD_WIDTH, Math.random() * BOARD_HEIGHT],
+        v: 0
       };
       s1Enemies.push(blob);
     };
     var createS2EnemyBlob = function() {
       var blob = {
-        position: [Math.random() * BOARD_WIDTH, Math.random() * BOARD_HEIGHT]
+        position: [Math.random() * BOARD_WIDTH, Math.random() * BOARD_HEIGHT],
+        v: 0
       };
       s2Enemies.push(blob);
     };
