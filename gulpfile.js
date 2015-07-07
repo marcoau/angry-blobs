@@ -15,7 +15,6 @@ var watch = require('gulp-watch');
 var uglify = require('gulp-uglify');
 
 // WATCHED GLOBS
-var SERVER_PATHS = ['./server/**/*.*', 'index.js'];
 var JS_PATHS = ['./client/**/*.js', '!client/build/**/*.*'];
 var SASS_PATHS =  ['./client/**/*.scss', '!client/build/**/*.*'];
 
@@ -29,7 +28,7 @@ var logError = function(err) {
 var serverTask = function() {
   nodemon({
     script: 'index.js',
-    watch: SERVER_PATHS
+    ext: 'js'
   })
   .on('start', function() {
     livereload.listen();
